@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Gerador de Números</title>
+    <style>
+        body { font-family: sans-serif; display: grid; place-content: center; text-align: center; min-height: 90vh; background-color: #f0f2f5; }
+        .container { background-color: white; padding: 2rem 3rem; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        h1 { color: #333; }
+        #resultado { font-size: 4rem; font-weight: bold; color: #007BFF; margin: 1.5rem 0; }
+        button { padding: 10px 20px; font-size: 1rem; color: white; background-color: #007BFF; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Gerador de Números com API Python</h1>
+        <p>Clique no botão para buscar um número da nossa API!</p>
+        <div id="resultado">?</div>
+        <button id="gerarBtn">Gerar Número</button>
+    </div>
+
+    <script>
+        // Pega os elementos da página
+        const gerarBtn = document.getElementById('gerarBtn');
+        const resultadoDiv = document.getElementById('resultado');
+
+        // Adiciona um evento de clique ao botão
+        gerarBtn.addEventListener('click', async () => {
+            resultadoDiv.textContent = '...';
+
+            try {
+                // IMPORTANTE: Agora usamos um caminho relativo '/api'
+                // pois o HTML e a API estão no mesmo projeto Vercel.
+                const response = await fetch('/api/');
+                const data = await response.json();
+
+                // Mostra o número recebido da API
+                resultadoDiv.textContent = data.numero;
+
+            } catch (error) {
+                resultadoDiv.textContent = 'Erro!';
+                console.error('Falha ao chamar a API:', error);
+            }
+        });
+    </script>
+</body>
+</html>
