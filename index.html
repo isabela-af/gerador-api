@@ -16,29 +16,58 @@
 <body>
     <div class="container">
         <h1>Gerador de Números com API em Python</h1>
-        <p>Clique no botão para buscar um número da nossa API!</p>
+        <p>Clique no botão para gerar um número!</p>
+        <div style="margin-bottom:1rem;">
+            <label>
+                <input type="radio" name="tipo" value="aleatorio" checked> Aleatório
+            </label>
+            <label style="margin-left:1rem;">
+                <input type="radio" name="tipo" value="intervalo"> Intervalo
+            </label>
+        </div>
+        <div id="intervaloCampos" style="display:none; margin-bottom:1rem;">
+            <input type="number" id="min" placeholder="Mínimo" style="width:80px;"> a
+            <input type="number" id="max" placeholder="Máximo" style="width:80px;">
+        </div>
         <div id="resultado">?</div>
         <button id="gerarBtn">Gerar Número</button>
     </div>
 
+
+
     <script>
-        // Pega os elementos da página
+        // Elementos
         const gerarBtn = document.getElementById('gerarBtn');
         const resultadoDiv = document.getElementById('resultado');
+        const tipoRadios = document.getElementsByName('tipo');
+        const intervaloCampos = document.getElementById('intervaloCampos');
+        const minInput = document.getElementById('min');
+        const maxInput = document.getElementById('max');
 
-        // Adiciona um evento de clique ao botão
+        // Mostra/esconde campos de intervalo
+        tipoRadios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                if (radio.value === 'intervalo' && radio.checked) {
+                    intervaloCampos.style.display = '';
+                } else if (radio.value === 'aleatorio' && radio.checked) {
+                    intervaloCampos.style.display = 'none';
+                }
+            });
+        });
+
         gerarBtn.addEventListener('click', async () => {
             resultadoDiv.textContent = '...';
-
+            let tipo = document.querySelector('input[name="tipo"]:checked').value;
+            let url = '/api/?tipo=' + tipo;
+            if (tipo === 'intervalo') {
+                const min = minInput.value;
+                const max = maxInput.value;
+                url += `&min=${min}&max=${max}`;
+            }
             try {
-                // IMPORTANTE: Agora usamos um caminho relativo '/api'
-                // pois o HTML e a API estão no mesmo projeto Vercel.
-                const response = await fetch('/api/');
+                const response = await fetch(url);
                 const data = await response.json();
-
-                // Mostra o número recebido da API
                 resultadoDiv.textContent = data.numero;
-
             } catch (error) {
                 resultadoDiv.textContent = 'Erro!';
                 console.error('Falha ao chamar a API:', error);
