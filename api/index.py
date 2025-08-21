@@ -19,14 +19,17 @@ class handler(BaseHTTPRequestHandler):
         tipo = params.get('tipo', ['aleatorio'])[0]
 
         if tipo == 'intervalo':
-            try:
-                min_val = int(params.get('min', [1])[0])
-                max_val = int(params.get('max', [1000])[0])
+            min_str = params.get('min', [''])[0]
+            max_str = params.get('max', [''])[0]
+            if min_str.isdigit() and max_str.isdigit():
+                min_val = int(min_str)
+                max_val = int(max_str)
                 if min_val > max_val:
-                    raise ValueError
-                numero_gerado = random.randint(min_val, max_val)
-            except Exception:
-                numero_gerado = 'Erro: intervalo inválido'
+                    numero_gerado = 'Erro: mínimo maior que máximo'
+                else:
+                    numero_gerado = random.randint(min_val, max_val)
+            else:
+                numero_gerado = 'Erro: valores inválidos'
         else:
             numero_gerado = random.randint(1, 1000)
 

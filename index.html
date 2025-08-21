@@ -62,6 +62,11 @@
             if (tipo === 'intervalo') {
                 const min = minInput.value;
                 const max = maxInput.value;
+                // Validação simples: ambos preenchidos e inteiros
+                if (!min || !max || isNaN(min) || isNaN(max) || parseInt(min) > parseInt(max)) {
+                    resultadoDiv.textContent = 'Preencha corretamente o mínimo e o máximo!';
+                    return;
+                }
                 url += `&min=${min}&max=${max}`;
             }
             try {
