@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meu Gerador de Números</title>
+    <title>Gerador de Números</title>
     <style>
-        body { font-family: sans-serif; display: grid; place-content: center; text-align: center; min-height: 90vh; background-color: #f0f2f5; }
+        body { font-family: sans-serif; display: grid; place-content: center; text-align: center; min-height: 90vh; background-color: #185abd; }
         .container { background-color: white; padding: 2rem 3rem; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         h1 { color: #333; }
         #resultado { font-size: 4rem; font-weight: bold; color: #007BFF; margin: 1.5rem 0; }
@@ -58,15 +58,10 @@
         gerarBtn.addEventListener('click', async () => {
             resultadoDiv.textContent = '...';
             let tipo = document.querySelector('input[name="tipo"]:checked').value;
-            let url = '/api/?tipo=' + tipo;
+            let url = 'http://127.0.0.1:5000/api/?tipo=' + tipo;
             if (tipo === 'intervalo') {
                 const min = minInput.value;
                 const max = maxInput.value;
-                // Validação simples: ambos preenchidos e inteiros
-                if (!min || !max || isNaN(min) || isNaN(max) || parseInt(min) > parseInt(max)) {
-                    resultadoDiv.textContent = 'Preencha corretamente o mínimo e o máximo!';
-                    return;
-                }
                 url += `&min=${min}&max=${max}`;
             }
             try {

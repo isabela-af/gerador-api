@@ -1,9 +1,32 @@
-# Importa as bibliotecas necessárias
+from flask import Flask, request, jsonify
+import random
+from flask_cors import CORS
+
+app = Flask(__name__)
+CORS(app)
+
+@app.route('/api/')
+def gerar_numero():
+    tipo = request.args.get('tipo', 'aleatorio')
+    if tipo == 'intervalo':
+        try:
+            min_val = int(request.args.get('min', 0))
+            max_val = int(request.args.get('max', 100))
+            numero = random.randint(min_val, max_val)
+        except Exception:
+            return jsonify({'erro': 'Parâmetros inválidos'}), 400
+    else:
+        numero = random.randint(0, 100)
+    return jsonify({'numero': numero})
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
 from http.server import BaseHTTPRequestHandler
 import json
 import random
 
-# A Vercel espera uma classe chamada 'handler' que herda de BaseHTTPRequestHandler
+
 class handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
@@ -13,7 +36,7 @@ class handler(BaseHTTPRequestHandler):
         self.send_header('Access-Control-Allow-Origin', '*')
         self.end_headers()
 
-        # Pega os parâmetros da URL
+        
         query = urlparse(self.path).query
         params = parse_qs(query)
         tipo = params.get('tipo', ['aleatorio'])[0]
