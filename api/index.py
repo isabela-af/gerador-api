@@ -13,11 +13,19 @@ def gerar_numero():
             min_val = int(request.args.get('min', 0))
             max_val = int(request.args.get('max', 100))
             numero = random.randint(min_val, max_val)
+            return jsonify({'numero': numero})
         except Exception:
             return jsonify({'erro': 'Parâmetros inválidos'}), 400
+    elif tipo == 'cartas':
+        naipes = ['♥', '♦', '♣', '♠']
+        valores = ['A'] + [str(n) for n in range(2, 11)] + ['J', 'Q', 'K']
+        valor = random.choice(valores)
+        naipe = random.choice(naipes)
+        carta = {'valor': valor, 'naipe': naipe}
+        return jsonify({'carta': carta})
     else:
         numero = random.randint(0, 100)
-    return jsonify({'numero': numero})
+        return jsonify({'numero': numero})
 
 if __name__ == '__main__':
     app.run(debug=True)

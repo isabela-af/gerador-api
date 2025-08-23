@@ -5,18 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerador de Números</title>
     <style>
-        body { font-family: sans-serif; display: grid; place-content: center; text-align: center; min-height: 90vh; background-color: #185abd; }
+        body { font-family: sans-serif; display: grid; place-content: center; text-align: center; min-height: 90vh; background-color: #082748; }
         .container { background-color: white; padding: 2rem 3rem; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         h1 { color: #333; }
-        #resultado { font-size: 4rem; font-weight: bold; color: #007BFF; margin: 1.5rem 0; }
-        button { padding: 10px 20px; font-size: 1rem; color: white; background-color: #007BFF; border: none; border-radius: 5px; cursor: pointer; }
+        #resultado { font-size: 4rem; font-weight: bold; color: #082748; margin: 1.5rem 0; }
+        button { padding: 10px 20px; font-size: 1rem; color: white; background-color: #082748; border: none; border-radius: 5px; cursor: pointer; }
         button:hover { background-color: #0056b3; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Gerador de Números Aleatórios</h1>
-        <p>Clique no botão para gerar um número!</p>
+        <p>Selecione algo:</p>
         <div style="margin-bottom:1rem;">
             <label>
                 <input type="radio" name="tipo" value="aleatorio" checked> Aleatório
@@ -24,12 +24,18 @@
             <label style="margin-left:1rem;">
                 <input type="radio" name="tipo" value="intervalo"> Intervalo
             </label>
+            <label style="margin-left:1rem;"></label>
+            <label>
+                <input type="radio" name="tipo" value="cartas"> Cartas
+            </label>
         </div>
         <div id="intervaloCampos" style="display:none; margin-bottom:1rem;">
-            <input type="number" id="min" placeholder="Mínimo" style="width:80px;"> a
+            <input type="number" id="min" placeholder="Mínimo" style="width:80px;"> e
             <input type="number" id="max" placeholder="Máximo" style="width:80px;">
+            
         </div>
-        <div id="resultado">?</div>
+    <div id="resultado">?</div>
+    <div id="cartaSVG"></div>
         <button id="gerarBtn">Gerar Número</button>
     </div>
 
@@ -55,8 +61,11 @@
             });
         });
 
+        const cartaSVGDiv = document.getElementById('cartaSVG');
+
         gerarBtn.addEventListener('click', async () => {
             resultadoDiv.textContent = '...';
+            cartaSVGDiv.innerHTML = '';
             let tipo = document.querySelector('input[name="tipo"]:checked').value;
             let url = 'http://127.0.0.1:5000/api/?tipo=' + tipo;
             if (tipo === 'intervalo') {
@@ -67,12 +76,41 @@
             try {
                 const response = await fetch(url);
                 const data = await response.json();
-                resultadoDiv.textContent = data.numero;
+                if (tipo === 'cartas' && data.carta) {
+                    resultadoDiv.textContent = '';
+                    cartaSVGDiv.innerHTML = gerarCartaSVG(data.carta.valor, data.carta.naipe);
+                } else {
+                    cartaSVGDiv.innerHTML = '';
+                    resultadoDiv.textContent = data.numero;
+                }
             } catch (error) {
                 resultadoDiv.textContent = 'Erro!';
+                cartaSVGDiv.innerHTML = '';
                 console.error('Falha ao chamar a API:', error);
             }
         });
+
+        // SVG
+                function gerarCartaSVG(valor, naipe) {
+                        let cor = (naipe === '♥' || naipe === '♦') ? '#d00' : '#222';
+                        return `
+                        <svg width="120" height="170" viewBox="0 0 120 170" style="border-radius:10px;box-shadow:0 2px 8px #0002;">
+                                <rect x="2" y="2" width="116" height="166" rx="12" fill="#fff" stroke="#ccc" stroke-width="3"/>
+
+                                <!-- Canto superior esquerdo -->
+                                <text x="12" y="28" font-size="22" fill="${cor}" font-family="monospace" font-weight="bold">${valor}</text>
+                                <text x="12" y="48" font-size="20" fill="${cor}" font-family="monospace">${naipe}</text>
+
+                                <!-- Canto inferior direito -->
+                                <g transform="rotate(180,105,155)">
+                                    <text x="105" y="161" font-size="22" fill="${cor}" font-family="monospace" font-weight="bold">${valor}</text>
+                                    <text x="105" y="180" font-size="20" fill="${cor}" font-family="monospace">${naipe}</text>
+                                </g>
+
+                                <!-- Centro da carta -->
+                                <text x="60" y="95" font-size="48" fill="${cor}" font-family="monospace" text-anchor="middle" alignment-baseline="middle">${naipe}</text>
+                        </svg>`;
+                }
     </script>
 </body>
 </html>
